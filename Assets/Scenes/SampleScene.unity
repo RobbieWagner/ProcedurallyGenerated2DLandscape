@@ -306,8 +306,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileOptions:
   - {fileID: 4965162314466356115, guid: 43361cfae02f4144794ed7f2864d300d, type: 3}
-  maxRows: 10
-  maxColumns: 10
+  maxRows: 31
+  maxColumns: 4
 --- !u!4 &805130874
 Transform:
   m_ObjectHideFlags: 0
