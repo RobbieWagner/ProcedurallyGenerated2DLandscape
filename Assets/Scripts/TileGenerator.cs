@@ -1,5 +1,5 @@
 //References:
-//Use of Perlin Noise: https://www.youtube.com/watch?v=DBjd7NHMgOE
+//Use of noise mapping: https://www.youtube.com/watch?v=DBjd7NHMgOE
 
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] private int maxColumns;
     private float tileSize;
     float[,] noiseMap;
+    float[,] fallOffMap;
     private Vector3 startingPosition;
 
     private float PERLIN_SCALE = .1f;
@@ -24,6 +25,7 @@ public class TileGenerator : MonoBehaviour
         startingPosition = new Vector3(startingXPosition, startingYPosition, 0f);
 
         noiseMap = InitializeNoiseMap();
+        fallOffMap = InitializeFallOffMap();
 
         GenerateTilemap();
     }
@@ -41,7 +43,7 @@ public class TileGenerator : MonoBehaviour
                 if (PositionHasNoTile(tilePosition))
                 {
                     //Debug.Log(y * 10 + x + 1);
-                    tile = (int)noiseMap[x, y];
+                    tile = (int)noiseMap[x, y] - (int)fallOffMap[x,y];
                     if (tile < 0) tile = 0;
                     else if (tile == tileOptions.Length) tile = tileOptions.Length - 1;
                     AddTile(tilePosition, tileOptions[tile]);
@@ -85,5 +87,22 @@ public class TileGenerator : MonoBehaviour
         }
 
         return initialNoiseMap;
+    }
+
+    private float[,] InitializeFallOffMap()
+    {
+        float[,] initialFallOffMap = new float[maxColumns, maxRows];
+        for(int y = 0; y < maxRows; y++)
+        {
+            for(int x = 0; x < maxColumns; x++)
+            {
+                float xv = x / (float)maxColumns * 2 - 1;
+                float yv = y / (float)maxRows * 2 - 1;
+                float v = Mathf.Max(Mathf.Abs(xv), Mathf.Abs(yv));
+                initialFallOffMap[x,y] = Mathf.Pow(v,3f)/(Mathf.Pow(v,3f) + Mathf.Pow(2.2f - 2.2f * v, 3f));
+            }
+        }
+
+        return initialFallOffMap;
     }
 }
